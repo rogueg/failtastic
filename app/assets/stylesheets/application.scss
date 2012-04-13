@@ -1,0 +1,26 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or vendor/assets/stylesheets of plugins, if any, can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the top of the
+ * compiled file, but it's generally better to create a new file per style scope.
+ *
+ *= require_self
+ *= require_tree .
+*/
+
+@import "bootstrap";
+
+div.dataTables_filter label { float: right; width: 460px; text-align: right; }
+div.dataTables_filter input { display: inline; }
+div.dataTables_info { padding-top: 8px; }
+div.dataTables_paginate { float: right; margin: 0; }
+
+table {
+    margin: 1em 0;
+    clear: both;
+}
+

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Failtastic</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <style type="text/css" media="screen">
+    <%= yield(:style).gsub(/\/?style>/, '').html_safe %>
+  </style>
+</head>
+<body>
+
+<%= yield %>
+
+<script type="text/javascript" charset="utf-8">
+  <%= yield(:js).gsub(/<\/?script>/, '').html_safe %>
+</script>
+
+</body>
+</html>

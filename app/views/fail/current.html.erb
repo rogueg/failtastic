@@ -1,0 +1,35 @@
+<% content_for :style do %><style>
+</style><% end %>
+
+<% content_for :js do %><script>
+
+  $(document).ready(function() {
+    $('#main').dataTable({
+      bPaginate: false,
+      bInfo: false
+    });
+  });
+
+</script><% end %>
+
+<h1>Recent Failures</h1>
+<table id='main' class='table table-bordered table-striped table-condensed'>
+  <thead><tr>
+    <th>Status</th>
+    <th>Name</th>
+    <th>Failing for</th>
+    <th>Last failed</th>
+    <th>Replies</th>
+  </tr></thead>
+  <tbody>
+  <% for fail in Failure.recent %>
+  <tr>
+    <td><%= fail.status %></td>
+    <td><%= link_to fail.fallible.name, :action => 'fallible', :id => fail.fallible.id %></td>
+    <td><%= distance_of_time_in_words(fail.started_at, fail.ended_at) %></td>
+    <td><%= time_ago_in_words fail.ended_at %></td>
+    <td><%= reply_list(fail.replies) %></td>
+  </tr>
+  <% end %>
+  </tbody>
+</table>

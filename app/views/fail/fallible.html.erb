@@ -1,0 +1,10 @@
+<%= link_to '<< back', :back %>
+<h2><%= @fal.name %> (<%= @fal.last_failure.replies.count %>)</h2>
+
+<% old_replies = @fal.human_replies - @fal.last_failure.replies %>
+
+<% for rep in [@fal.last_failure.replies.first] %>
+  <div>
+    <%= clean_email(rep.body) %>
+  </div>
+<% end %>

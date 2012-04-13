@@ -1,0 +1,14 @@
+<ul>
+<% for fal in @fals %>
+  <li>
+    <%= fal.name %>
+    (<%= fal.human_replies.map(&:from).join(', ') %>)
+    <ul>
+    <% for fail in fal.failures %>
+      <li><%= fail.started_at %> <%= fail.ended_at %></li>
+    <% end %>
+    </ul>
+  </li>
+<% end %>
+</ul>
+  

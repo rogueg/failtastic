@@ -18,12 +18,14 @@ class Initial < ActiveRecord::Migration
       t.references :failure
       t.string 'shard'
       t.text 'body'
+      t.datetime 'last_failed_at'
       t.timestamps
     end
 
     create_table :human_replies do |t|
       t.references :fallible
       t.string 'from'
+      t.string 'to'
       t.datetime 'sent_at'
       t.text 'body'
       t.timestamps

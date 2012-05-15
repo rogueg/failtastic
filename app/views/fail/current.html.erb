@@ -4,7 +4,7 @@
 <% content_for :js do %><script>
 
   $(document).ready(function() {
-    $('#main').dataTable({
+    $('#current').dataTable({
       bPaginate: false,
       bInfo: false
     });
@@ -13,12 +13,13 @@
 </script><% end %>
 
 <h1>Recent Failures</h1>
-<table id='main' class='table table-bordered table-striped table-condensed'>
+<table id='current' class='table table-bordered table-striped table-condensed'>
   <thead><tr>
     <th>Status</th>
     <th>Name</th>
     <th>Failing for</th>
     <th>Last failed</th>
+    <th>Shard count</th>
     <th>Replies</th>
   </tr></thead>
   <tbody>
@@ -28,6 +29,7 @@
     <td><%= link_to fail.fallible.name, :action => 'fallible', :id => fail.fallible.id %></td>
     <td><%= distance_of_time_in_words(fail.started_at, fail.ended_at) %></td>
     <td><%= time_ago_in_words fail.ended_at %></td>
+    <td><%= fail.shard_bodies.count %></td>
     <td><%= reply_list(fail.replies) %></td>
   </tr>
   <% end %>

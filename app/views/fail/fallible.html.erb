@@ -1,10 +1,58 @@
-<%= link_to '<< back', :back %>
-<h2><%= @fal.name %> (<%= @fal.last_failure.replies.count %>)</h2>
+<% content_for :js do %><script>
 
-<% old_replies = @fal.human_replies - @fal.last_failure.replies %>
+  $(function() {
+    $('.left_fixie .nav-tabs li:first a').click();
 
-<% for rep in [@fal.last_failure.replies.first] %>
-  <div>
-    <%= clean_email(rep.body) %>
+    // make the left pane scrollable if it gets to big.
+    // This is an edge case, for most tests I expect the error to fit on one page.
+    $(window).resize(function() {
+      var tc = $('.left_fixie .tab-content');
+      tc.css('height', ($(window).height() - tc.position().top - 30) + 'px');
+    }).resize();
+
+    // toggle old replies to this failure
+    $('.show_old, .hide_old').click(function() {
+      $('.show_old').toggle();
+      $('#old_replies').toggle();
+      return false;
+    });
+  })
+
+
+</script><% end %>
+
+<div class='left_fixie'>
+  <h2><%= @fal.name %></h2>
+
+  <ul class='nav nav-tabs'>
+    <% for sb in @fal.last_failure.shard_bodies %>
+      <li><a href="#<%= sb.shard %>" data-toggle='tab'><%= sb.shard %></a></li>
+    <% end %>
+  </ul>
+
+  <div class='tab-content'>
+    <% for sb in @fal.last_failure.shard_bodies %>
+      <div class="tab-pane" id="<%= sb.shard %>">
+        <%= clean_email(sb.body) %>
+      </div>
+    <% end %>
   </div>
-<% end %>
+
+</div>
+
+<div class='right_fluid'>
+  <% if @old_replies.any? %>
+    <a class='show_old'>Show <%= @old_replies.count %> older replies</a>
+    <div id='old_replies'>
+      <a class='hide_old'>Hide older replies</a>
+      <% for rep in @old_replies %>
+        <%= render :partial => 'human_reply', :locals => {:rep => rep} %>
+      <% end %>
+      <a class='hide_old'>Hide older replies</a>
+    </div>
+  <% end %>
+
+  <% for rep in @fal.last_failure.replies %>
+    <%= render :partial => 'human_reply', :locals => {:rep => rep} %>
+  <% end %>
+</div>

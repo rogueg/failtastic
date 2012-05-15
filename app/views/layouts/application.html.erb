@@ -11,7 +11,9 @@
 </head>
 <body>
 
-<%= yield %>
+<div id='main'>
+  <%= yield %>
+</div>
 
 <script type="text/javascript" charset="utf-8">
   <%= yield(:js).gsub(/<\/?script>/, '').html_safe %>

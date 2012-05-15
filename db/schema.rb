@@ -32,18 +32,25 @@ ActiveRecord::Schema.define(:version => 20120408194026) do
   create_table "human_replies", :force => true do |t|
     t.integer  "fallible_id"
     t.string   "from"
+    t.string   "to"
     t.datetime "sent_at"
     t.text     "body"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
 
+  create_table "settings", :force => true do |t|
+    t.string "key"
+    t.text   "value"
+  end
+
   create_table "shard_bodies", :force => true do |t|
     t.integer  "failure_id"
     t.string   "shard"
     t.text     "body"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "last_failed_at"
+    t.datetime "created_at",     :null => false
+    t.datetime "updated_at",     :null => false
   end
 
 end

@@ -2,7 +2,6 @@ require File.expand_path('../../config/environment',  __FILE__)
 require 'net/imap'
 require 'ostruct'
 require 'shiny_opts'
-require 'pry'
 
 require 'system_tests'
 

@@ -16,7 +16,7 @@ end
 
 if @opts.username
   @cfg.username = @opts.username
-  print "Password for #{u}: "
+  print "Password for #{@opts.username}: "
   system "stty -echo"
   @cfg.password = $stdin.gets.chomp
   system "stty echo"

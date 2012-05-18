@@ -22,11 +22,29 @@ if @opts.username
   system "stty echo"
 end
 
-@imap = Net::IMAP.new @cfg.host, :port => @cfg.port, :ssl => {:verify_mode => OpenSSL::SSL::VERIFY_NONE}
-@imap.login(@cfg.username, @cfg.password)
-p @imap.list('', '%').map{|m| m['name']}
+def login(opts={})
+  imap = Net::IMAP.new @cfg.host, :port => @cfg.port, :ssl => {:verify_mode => OpenSSL::SSL::VERIFY_NONE}
+  imap.login(@cfg.username, @cfg.password)
+  imap.select opts[:mailbox] if opts[:mailbox]
+  imap
+end
 
-@imap.select('PT')
+
+if @opts.poll
+  while true
+    @last_run ||= Date.today
+    imap = login :mailbox => 'PT'
+    msgs = imap.fetch_range @last_run, Date.tomorrow, :fetch => ["ENVELOPE", "BODY.PEEK[1]<0.32>"]
+    SystemTests.new('production', imap).process(msgs)
+    imap.close
+    @last_run = Date.today # last_run lets us avoid skipping records at midnight
+    sleep 5.minutes
+  end
+end
+
+
+@imap = login :mailbox => 'PT'
+#p @imap.list('', '%').map{|m| m['name']}
 @st = SystemTests.new('production', @imap)
 
 if @opts.fast
@@ -35,17 +53,6 @@ if @opts.fast
     :fetch  => ["ENVELOPE", "BODY.PEEK[1]"],
     :handler => lambda {|m| @st.process(m.select(&:human)) }
 
-
-elsif @opts.poll
-  while true
-    @last_run ||= Date.today
-    msgs = @imap.fetch_range @last_run, Date.tomorrow, :fetch => ["ENVELOPE", "BODY.PEEK[1]<0.32>"]
-    @st.process(msgs)
-    @last_run = Date.today # last_run lets us avoid skipping records at midnight
-    sleep 5.minutes
-  end
-
-
 else
   @imap.fetch_in_batches Date.parse(@opts.start), Date.tomorrow, :width => 1,
     :fetch => ["ENVELOPE", "BODY.PEEK[1]<0.32>"],
@@ -53,5 +60,5 @@ else
 
 end
 
-@imap.logout
-@imap.disconnect
+@imap.close
+

@@ -44,4 +44,9 @@ Net::IMAP.class_eval do
   def fetch_body(msg_id)
     fetch([msg_id], "BODY.PEEK[1]")[0].attr["BODY[1]"]
   end
+
+  def close
+    self.logout
+    self.disconnect
+  end
 end

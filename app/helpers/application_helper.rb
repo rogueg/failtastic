@@ -1,8 +1,12 @@
 module ApplicationHelper
   def date_in_words(date)
-    if date.today?
-      strftime("%l:%M %p")
+    d_string = case
+      when date.today?; "%l:%M %p"
+      when date > 3.days.ago; "%b %e &nbsp;%l:%M %p"
+      when date.year == Time.now.year; "%b %e"
     end
+
+    "#{date.strftime(d_string)}&nbsp;&nbsp;<span class='dim'>(#{time_ago_in_words(date)} ago)</span>".html_safe
   end
 
   def reply_list(replies)
@@ -13,12 +17,15 @@ module ApplicationHelper
   end
 
   def clean_email(txt)
-    idx = txt =~ /^On .* wrote:/
+    # first strip out multipart crap
+    txt = txt.gsub(/\=\r?\n/, '').gsub(/\=3D/, '=')
+
+    # try and remove quoted text
+    idx = txt =~ /^On .*wrote:/
     txt = idx ? txt[0, idx-1] : txt # slice out quoted stuff
-    txt = h(txt).gsub(/\=\r?\n/, '') # multipart \r\n is nothing
-                .gsub(/\r?\n/, '<br>') # real \r\n is actually a newline
-                .gsub(/\=3D/, '=') # multipart escaped equal sign
-                .gsub(/ /, '&nbsp;') # keep spacing from email
+
+    # turn text spacing into html equivalent
+    txt = h(txt).gsub(/\r?\n/, '<br>').gsub(/ /, '&nbsp;')
 
     txt.html_safe
   end

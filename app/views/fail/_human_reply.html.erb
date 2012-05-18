@@ -1,8 +1,11 @@
-<div class='human_reply'>
-  <div class='header'>
-    <h3><%= rep.from %></h3>
-    <span class='recipients'><%= recipient_list(rep.to_emails) %></span>
-    <span class='reply_time'><%= rep.sent_at %></span>
-  </div>
+<div class='human_reply' data-id='<%= rep.id %>'>
+  <table class='header'><tr>
+    <td>
+      <h3><%= rep.from %></h3>
+      <span class='recipients'><%= recipient_list(rep.to_emails) %></span>
+    </td>
+    <td class='subtext'><%= date_in_words(rep.sent_at) %></td>
+  </tr></table>
+
   <%= clean_email(rep.body) %>
 </div>

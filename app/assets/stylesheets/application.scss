@@ -16,10 +16,19 @@ table {
 }
 
 a { cursor: pointer; }
+.dim { color: #aaa; }
 
 #main {
   padding: 20px;
   > h1 { margin-bottom: -37px; }
+}
+
+table.header {
+  width: 100%;
+  margin: 0;
+  td { vertical-align: text-bottom; }
+  h1, h2, h3, h4 { display: inline; }
+  .subtext { text-align: right; }
 }
 
 .left_fixie {
@@ -44,11 +53,8 @@ a { cursor: pointer; }
   margin-bottom: 20px;
 
   .header {
-    @include clearfix();
     border-bottom: 1px solid #ddd;
-
-    h3 { display: inline; float: left; }
+    margin-bottom: 4px;
     .recipients { display:inline-block; margin: 7px 0 0 10px; }
-    .reply_time { float: right; margin-top: 7px; }
   }
 }

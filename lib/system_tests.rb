@@ -51,7 +51,7 @@ class SystemTests
     # for each shard, save the last msg body we got
     fail_msgs.group_by(&:shard).each do |shard, msgs|
       sb = existing.shard_bodies.where(:shard => shard).first_or_create
-      sb.update_attributes! :body => @imap.fetch_body(msgs.last.id)
+      sb.update_attributes! :last_failed_at => msgs.last.date, :body => @imap.fetch_body(msgs.last.id)
     end
   end
 end

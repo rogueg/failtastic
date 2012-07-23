@@ -8,7 +8,8 @@ class FailController < ApplicationController
 
   def fallible
     @fal = Fallible.find params[:id]
-    @old_replies = @fal.human_replies.where("sent_at < ?", @fal.last_failure.started_at)
+    @curr_fail = @fal.last_failure
+    @old_replies = @fal.human_replies.where("sent_at < ?", @curr_fail.started_at)
   end
 
 end

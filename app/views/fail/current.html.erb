@@ -7,7 +7,8 @@
     $('#current').dataTable({
       bPaginate: false,
       bInfo: false,
-      aoColumns: [null, null,
+      aoColumns: [
+        {sSortDataType: "sort-num", sType: "numeric"}, null, null,
         {sSortDataType: "sort-num", sType: "numeric"},
         {sSortDataType: "sort-num", sType: "numeric"},
         null, null
@@ -32,6 +33,7 @@
   <thead><tr>
     <th>Status</th>
     <th>Name</th>
+    <th>Team</th>
     <th>Failing for</th>
     <th>Last failed</th>
     <th>Shard count</th>
@@ -40,8 +42,9 @@
   <tbody>
   <% for fail in Failure.recent %>
   <tr>
-    <td><%= fail.status %></td>
+    <td data-sort-num='<%= status_sort(fail) %>'><%= fail.status %></td>
     <td><%= link_to fail.fallible.name, :action => 'fallible', :id => fail.fallible.id %></td>
+    <td><%= fail.team %></td>
     <td data-sort-num='<%= fail.ended_at - fail.started_at %>'><%= distance_of_time_in_words(fail.started_at, fail.ended_at) %></td>
     <td data-sort-num='<%= fail.ended_at.to_i %>' ><%= time_ago_in_words fail.ended_at %></td>
     <td><%= fail.shard_bodies.count %></td>

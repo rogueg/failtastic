@@ -24,17 +24,17 @@
 <div class='left_fixie'>
   <table class='header'><tr>
     <td><h2><%= @fal.name %></h2></td>
-    <td class='subtext'>since <%= date_in_words(@fal.last_failure.started_at) %></td>
+    <td class='subtext'>since <%= date_in_words(@curr_fail.started_at) %></td>
   </tr></table>
 
   <ul class='nav nav-tabs'>
-    <% for sb in @fal.last_failure.shard_bodies %>
+    <% for sb in @curr_fail.shard_bodies %>
       <li><a href="#<%= sb.shard %>" data-toggle='tab'><%= sb.shard %></a></li>
     <% end %>
   </ul>
 
   <div class='tab-content'>
-    <% for sb in @fal.last_failure.shard_bodies %>
+    <% for sb in @curr_fail.shard_bodies %>
       <div class="tab-pane" id="<%= sb.shard %>">
         At <%= date_in_words(sb.last_failed_at) %>:<br/><br/>
         <%= clean_email(sb.body) %>
@@ -56,7 +56,7 @@
     </div>
   <% end %>
 
-  <% for rep in @fal.last_failure.replies %>
+  <% for rep in @curr_fail.replies %>
     <%= render :partial => 'human_reply', :locals => {:rep => rep} %>
   <% end %>
 </div>

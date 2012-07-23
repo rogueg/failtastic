@@ -30,6 +30,10 @@ module ApplicationHelper
     txt.html_safe
   end
 
+  def status_sort(fail)
+    %w(failing acknowledged pending fixed).map(&:to_sym).index(fail.status)
+  end
+
   def recipient_list(recipients)
     res = recipients.any? ? "@ " : ""
     res += recipients.map {|r| "<span class=''>#{r}</span>"}.join(", ")

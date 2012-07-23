@@ -33,7 +33,7 @@ table.header {
 
 .left_fixie {
   position: fixed;
-  width: 600px;
+  width: 50%;
 
   .tab-content {
     overflow: scroll;
@@ -42,7 +42,7 @@ table.header {
 }
 
 .right_fluid {
-  margin-left: 650px;
+  margin-left: 55%;
 }
 
 #old_replies {

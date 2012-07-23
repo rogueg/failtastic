@@ -41,6 +41,7 @@ class SystemTests
     # update (or create) the failure for this period
     existing = fal.failures.where("ended_at >= ? AND started_at <= ?", t_min-26.hours, t_max).first
     existing ||= fal.failures.create! :started_at => t_min, :ended_at => t_max
+    existing.update_attributes! :to => fail_msgs.last.to.map(&:to_s).join(',')
     existing.update_attributes! :ended_at => t_max if existing.ended_at < t_max
 
     # figure out what shard each msg came from.

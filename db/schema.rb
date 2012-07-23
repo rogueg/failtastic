@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120408194026) do
+ActiveRecord::Schema.define(:version => 20120723210838) do
 
   create_table "failures", :force => true do |t|
     t.integer  "fallible_id"
@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(:version => 20120408194026) do
     t.datetime "ended_at"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
+    t.string   "to"
   end
 
   create_table "fallibles", :force => true do |t|

@@ -9,6 +9,6 @@ aggregates, and inserts into a DB.  A rails app then displays all outstanding fa
 1. Create config/mail.yml (ask grant for the failbot account credentials)
 1. Populate the DB with human replies going back a long way
     ruby script/mail_fetch.rb --fast --start "Apr 1 2012"
-1. Populate teh DB with test failures going back only a few weeks
+1. Populate the DB with test failures going back only a few weeks
     ruby script/mail_fetch.rb --start "Jul 1"
 1. Start the server (rails s)

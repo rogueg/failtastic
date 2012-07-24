@@ -22,6 +22,7 @@ module ApplicationHelper
 
     # try and remove quoted text
     idx = txt =~ /^On .*wrote:/
+    idx ||= txt =~ /-+\s*Forwarded/
     txt = idx ? txt[0, idx-1] : txt # slice out quoted stuff
 
     # turn text spacing into html equivalent

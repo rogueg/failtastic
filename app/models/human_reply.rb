@@ -5,6 +5,6 @@ class HumanReply < ActiveRecord::Base
     emls = self.to.to_s.split(',')
     emls.reject!{|e| e =~ /devel/}
 
-    emls.map{|e| e =~ /^(\w+)@/; $1 }
+    emls.map{|e| e =~ /^([\.\-\w]+)@/; $1 }
   end
 end

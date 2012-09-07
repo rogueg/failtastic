@@ -40,8 +40,8 @@ if @opts.poll
       imap.close
       @last_run = Date.today # last_run lets us avoid skipping records at midnight
     rescue => e
-      puts ex.message
-      puts ex.backtrace.join("\n")
+      puts e.message
+      puts e.backtrace.join("\n")
     end
     sleep 5.minutes
   end

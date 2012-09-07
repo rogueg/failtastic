@@ -2,7 +2,9 @@ class Failure < ActiveRecord::Base
   belongs_to :fallible
   has_many :shard_bodies, :dependent => :destroy
 
-  scope :recent, where('ended_at >= ?', 1.day.ago).includes(:fallible)
+  def self.recent
+    Failure.where('ended_at >= ?', 1.day.ago).includes(:fallible)
+  end
 
   def status
     case

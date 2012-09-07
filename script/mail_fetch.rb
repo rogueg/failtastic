@@ -32,12 +32,17 @@ end
 
 if @opts.poll
   while true
-    @last_run ||= Date.today
-    imap = login :mailbox => 'PT'
-    msgs = imap.fetch_range @last_run, Date.tomorrow, :fetch => ["ENVELOPE", "BODY.PEEK[1]<0.32>"]
-    SystemTests.new('production', imap).process(msgs)
-    imap.close
-    @last_run = Date.today # last_run lets us avoid skipping records at midnight
+    begin
+      @last_run ||= Date.today
+      imap = login :mailbox => 'PT'
+      msgs = imap.fetch_range @last_run, Date.tomorrow, :fetch => ["ENVELOPE", "BODY.PEEK[1]<0.32>"]
+      SystemTests.new('production', imap).process(msgs)
+      imap.close
+      @last_run = Date.today # last_run lets us avoid skipping records at midnight
+    rescue => e
+      puts ex.message
+      puts ex.backtrace.join("\n")
+    end
     sleep 5.minutes
   end
 end

@@ -21,7 +21,7 @@ module ApplicationHelper
     txt = txt.gsub(/\=\r?\n/, '').gsub(/\=3D/, '=')
 
     # try and remove quoted text
-    idx = txt =~ /^On .*wrote:/
+    idx = txt =~ /^On .*\n?.*wrote:/
     idx ||= txt =~ /-+\s*Forwarded/
     txt = idx ? txt[0, idx-1] : txt # slice out quoted stuff
 

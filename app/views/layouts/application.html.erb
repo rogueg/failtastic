@@ -6,7 +6,7 @@
   <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
   <style type="text/css" media="screen">
-    <%= yield(:style).gsub(/\/?style>/, '').html_safe %>
+    <%= yield(:style).gsub(/<\/?style>/, '').html_safe %>
   </style>
 </head>
 <body>

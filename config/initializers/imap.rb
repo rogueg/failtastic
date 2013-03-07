@@ -36,13 +36,13 @@ Net::IMAP.class_eval do
         :from => envel.from.first,
         :to => Array.wrap(envel.to).compact.select(&:is_human?),
         :human => envel.from.first.is_human?,
-        :body => (fd.attr.find{|k,v| k =~ /BODY/} || []).last,
+        :body => (fd.attr.find{|k,v| k =~ /BODY/} || []).last.force_encoding('UTF-8'),
       })
     end
   end
 
   def fetch_body(msg_id)
-    fetch([msg_id], "BODY.PEEK[1]")[0].attr["BODY[1]"]
+    fetch([msg_id], "BODY.PEEK[1]")[0].attr["BODY[1]"].force_encoding('UTF-8')
   end
 
   def close

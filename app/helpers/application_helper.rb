@@ -4,6 +4,7 @@ module ApplicationHelper
       when date.today?; "%l:%M %p"
       when date > 3.days.ago; "%b %e &nbsp;%l:%M %p"
       when date.year == Time.now.year; "%b %e"
+      else "%b %e, %Y"
     end
 
     "#{date.strftime(d_string)}&nbsp;&nbsp;<span class='dim'>(#{time_ago_in_words(date)} ago)</span>".html_safe

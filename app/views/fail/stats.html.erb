@@ -1,0 +1,141 @@
+<% content_for :header do %>
+  <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/d3/3.0.1/d3.v3.min.js' %>
+  <%= javascript_include_tag '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js' %>
+<% end -%>
+
+<% content_for :style do %><style>
+  #main { padding: 0 20px; }
+
+  h2 { font-size: 20px; border-bottom: 1px solid #ddd; margin: 10px 0; }
+
+  #by_team { width: 600px; position: relative; }
+  #by_team h3 { display: inline-block; width: 80px; text-align: right; vertical-align: top; }
+
+  #by_team .legend {
+    position: absolute;
+    top: 10px;
+    right: 0;
+  }
+
+  #by_team .legend div {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 10px;
+  }
+
+  .bar { display: inline-block; height: 40px; width: 500px; }
+  .bar > div {
+    height: 100%;
+    text-align: right;
+    float: left;
+  }
+  .failing { background-color: #E81C0C; }
+  .acknowledged { background-color: #FF9266; }
+  .fixed { background-color: #166870; }
+
+  .bar span {
+    display: inline-block;
+    margin: 10px;
+    font-size: 1.5em;
+    color: #ddd;
+  }
+
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+
+  .x.axis path { display: none; }
+
+  .line {
+    fill: none;
+    stroke: #E81C0C;
+    stroke-width: 1.5px;
+  }
+
+</style><% end -%>
+
+<% content_for :js do %><script>
+  var by_team = <%= @by_team.to_json.html_safe %>;
+  var by_day_data = <%= @fail_by_day.to_json.html_safe %>;
+
+  _(by_team).each(function(types, team) {
+    var elem = $('#team_bar_tmpl').clone().attr('id', null).appendTo('#by_team').show();
+    elem.find('h3').text(team);
+
+    var total = 0;
+    _(types).each(function(cnt) { total += cnt });
+    types.acknowledged = (types.acknowledged || 0) + (types.pending || 0);
+
+    _(types).each(function(count, type) {
+      var barpart = elem.find('.'+type);
+      barpart.width((count/total*100) + '%');
+      $('<span>').text(count).appendTo(barpart);
+    })
+  });
+
+  
+  (function by_day(data) {
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 600 - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+    parse_date = function(d) { return new Date(d.day*1000) };
+
+    var x = d3.time.scale().range([0, width])
+            .domain(d3.extent(data, parse_date));
+    var y = d3.scale.linear().range([height, 0])
+            .domain([0, d3.max(data, function(d) { return d.count })]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom");
+    var yAxis = d3.svg.axis().scale(y).orient("left");
+
+    var line = d3.svg.line()
+        .x(function(d) { return x(parse_date(d)); })
+        .y(function(d) { return y(d.count); });
+
+    var svg = d3.select("#fail_by_day").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+    svg.append("g").attr("class", "y axis").call(yAxis)
+
+    svg.append("path")
+        .datum(data)
+        .attr("class", "line")
+        .attr("d", line);
+
+  })(by_day_data);
+
+</script><% end -%>
+
+<div id='by_team'>
+  <h2>Failed tests in the last day</h2>
+  <div class='legend'>
+    <div class='failing'></div> failing
+    <div class='acknowledged'></div> acknowledged
+    <div class='fixed'></div> fixed
+  </div>
+</div>
+
+<div id='team_bar_tmpl' style='display:none'>
+  <h3></h3>
+  <div class='bar'>
+    <div class='failing'></div>
+    <div class='acknowledged'></div>
+    <div class='fixed'></div>
+  </div>
+</div>
+
+<div id='fail_by_day'>
+  <h2>Failing tests over time</h2>
+</div>

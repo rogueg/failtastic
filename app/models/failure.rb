@@ -24,8 +24,9 @@ class Failure < ActiveRecord::Base
   end
 
   def passing_now?
-    return ended_at < 1.day.ago if test_runner.blank? || test_runner =~ /client_insight|nightly/
-    ended_at < 30.minutes.ago
+    return ended_at < 26.hours.ago if test_runner.blank? || test_runner =~ /client_insight|nightly/
+    return ended_at < 10.minutes.ago if test_runner =~ /_quick/
+    ended_at < 45.minutes.ago
   end
 
   def team

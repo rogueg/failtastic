@@ -2,8 +2,8 @@ class Failure < ActiveRecord::Base
   belongs_to :fallible
   has_many :shard_bodies, :dependent => :destroy
 
-  def self.recent
-    Failure.where('ended_at >= ?', 1.day.ago).includes(:fallible)
+  def self.recent(duration=1.day)
+    Failure.where('ended_at >= ?', duration.ago).includes(:fallible)
   end
 
   def status
@@ -13,6 +13,10 @@ class Failure < ActiveRecord::Base
     when replies.count > 0; :acknowleged
     else :failing
     end
+  end
+
+  def duration
+    ended_at - started_at
   end
 
   def replies

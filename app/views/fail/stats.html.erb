@@ -4,12 +4,12 @@
 <% end -%>
 
 <% content_for :style do %><style>
-  #main { padding: 0 20px; }
+  #main { padding: 0 20px; max-width: 800px; }
 
-  h2 { font-size: 17px; border-bottom: 1px solid #ddd; margin: 10px 0; width: 600px; }
+  h2 { font-size: 17px; border-bottom: 1px solid #ddd; margin: 30px 0 10px; }
 
-  #by_team { width: 600px; position: relative; }
-  #by_team h3 { display: inline-block; width: 80px; text-align: right; vertical-align: top; }
+  #by_team { position: relative; }
+  #by_team h3 { float: left; width: 80px; text-align: right; vertical-align: top; }
 
   #by_team .legend {
     position: absolute;
@@ -24,15 +24,19 @@
     margin-left: 10px;
   }
 
-  .bar { display: inline-block; height: 40px; width: 500px; }
+  .bar { height: 40px; margin: 0 0 10px 88px; }
   .bar > div {
     height: 100%;
     text-align: right;
     float: left;
   }
+
+  /* colors from https://kuler.adobe.com/#themeID/2268804 */
   .failing { background-color: #E81C0C; }
-  .acknowledged { background-color: #FF9266; }
+  .acknowledged { background-color: #E8C57A; /* #FF9266 */ }
   .fixed { background-color: #166870; }
+
+  #fail_by_day { height: 270px; }
 
   .bar span {
     display: inline-block;
@@ -50,6 +54,7 @@
 
   .x.axis path { display: none; }
 
+  .histbar { fill: #166870; }
   .line {
     fill: none;
     stroke: #E81C0C;
@@ -59,20 +64,21 @@
 </style><% end -%>
 
 <% content_for :js do %><script>
+  var fail_total = <%= @team_max.to_json %>;
   var by_team = <%= @by_team.to_json.html_safe %>;
   var by_day_data = <%= @fail_by_day.to_json.html_safe %>;
+  var fail_duration = <%= @fail_duration.to_json.html_safe %>;
 
   _(by_team).each(function(types, team) {
     var elem = $('#team_bar_tmpl').clone().attr('id', null).appendTo('#by_team').show();
     elem.find('h3').text(team);
 
-    var total = 0;
-    _(types).each(function(cnt) { total += cnt });
+    // count pending as acknowledged for simplicity
     types.acknowledged = (types.acknowledged || 0) + (types.pending || 0);
 
     _(types).each(function(count, type) {
       var barpart = elem.find('.'+type);
-      barpart.width((count/total*100) + '%');
+      barpart.width((count/fail_total*100) + '%');
       $('<span>').text(count).appendTo(barpart);
     })
   });
@@ -80,8 +86,8 @@
   
   (function by_day(data) {
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 600 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
+    width = $('#fail_by_day').width() - margin.left - margin.right;
+    height = $('#fail_by_day').height() - margin.top - margin.bottom;
     parse_date = function(d) { return new Date(d.day*1000) };
 
     var x = d3.time.scale().range([0, width])
@@ -116,26 +122,67 @@
 
   })(by_day_data);
 
+  (function by_duration(data) {
+    var margin = {top: 20, right: 20, bottom: 30, left: 50},
+        width = $('#fail_by_day').width() - margin.left - margin.right,
+        height = $('#fail_by_day').height() - margin.top - margin.bottom;
+
+    var x = d3.scale.ordinal().rangeRoundBands([0, width], .1)
+            .domain(data.map(function(d,i) { return i }));
+    var y = d3.scale.linear().range([height, 0]).domain([0, d3.max(data)]);
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom")
+                .tickValues(['< 1h', '3h', '12h', '1d', '3d', '1w', '2w', '1m', '> 1m']);
+    var yAxis = d3.svg.axis().scale(y).orient("left");
+
+    var svg = d3.select("#fail_duration").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+
+    svg.selectAll(".histbar")
+        .data(data)
+      .enter().append("rect")
+        .attr("class", "histbar")
+        .attr("x", function(d, i) { return x(i); })
+        .attr("width", x.rangeBand())
+        .attr("y", function(d) { return y(d); })
+        .attr("height", function(d) { return height - y(d) });
+
+  })(fail_duration);
+
 </script><% end -%>
 
 <div id='by_team'>
-  <h2>Failed tests in the last day</h2>
+  <h2 style='margin-top:0'>Failed tests in the last day</h2>
   <div class='legend'>
     <div class='failing'></div> failing
     <div class='acknowledged'></div> acknowledged
     <div class='fixed'></div> fixed
   </div>
-</div>
 
-<div id='team_bar_tmpl' style='display:none'>
-  <h3></h3>
-  <div class='bar'>
-    <div class='failing'></div>
-    <div class='acknowledged'></div>
-    <div class='fixed'></div>
+  <div id='team_bar_tmpl' style='display:none'>
+    <h3></h3>
+    <div class='bar'>
+      <div class='failing'></div>
+      <div class='acknowledged'></div>
+      <div class='fixed'></div>
+    </div>
   </div>
 </div>
 
-<div id='fail_by_day'>
-  <h2>Failing tests over time</h2>
-</div>
+<h2>Failing tests over time</h2>
+<div id='fail_by_day'></div>
+
+<h2>Test failure durations for the last week</h2>
+<div id='fail_duration'></div>

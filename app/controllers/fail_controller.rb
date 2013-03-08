@@ -37,7 +37,7 @@ class FailController < ApplicationController
     @fail_duration[:more_than_month] = 0
     Failure.recent(1.week).to_a.each do |fail|
       dur = fail.duration.to_i
-      bin = duration_bins.find(:more_than_month) {|d| dur < d }
+      bin = duration_bins.find {|d| dur < d } || :more_than_month
       @fail_duration[bin] += 1
     end
     @fail_duration = @fail_duration.values

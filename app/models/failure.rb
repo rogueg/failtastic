@@ -10,7 +10,7 @@ class Failure < ActiveRecord::Base
     case
     when passing_now?; :fixed
     when replies.where('sent_at > ?', ended_at).first; :pending
-    when replies.count > 0; :acknowleged
+    when replies.count > 0; :acknowledged
     else :failing
     end
   end

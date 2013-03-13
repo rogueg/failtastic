@@ -33,7 +33,7 @@ module ApplicationHelper
   end
 
   def status_sort(fail)
-    %w(failing acknowleged pending fixed).map(&:to_sym).index(fail.status)
+    %w(failing acknowledged pending fixed).map(&:to_sym).index(fail.status)
   end
 
   def recipient_list(recipients)

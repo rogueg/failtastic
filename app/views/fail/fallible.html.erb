@@ -29,7 +29,7 @@
 
   <ul class='nav nav-tabs'>
     <% for sb in @curr_fail.shard_bodies %>
-      <li><a href="#<%= sb.shard %>" data-toggle='tab'><%= sb.shard %></a></li>
+      <li><a href="#<%= sb.shard %>" class="<%= sb.recent? ? '' : 'old' %>" data-toggle='tab'><%= sb.shard %></a></li>
     <% end %>
   </ul>
 
